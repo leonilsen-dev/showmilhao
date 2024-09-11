@@ -180,10 +180,38 @@
         let score = 0;
         let playerName = "";
 
-        // Áudio de fundo e de erro
-        const backgroundAudio = new Audio('audios/background.mp3');
-        const errorAudio = new Audio('audios/errou.mp3'); // Áudio para erros
+       // Áudio de fundo e de erro
+const backgroundAudio = new Audio('audios/background.mp3');
+const errorAudio = new Audio('audios/errou.mp3'); // Áudio para erros
+
+function checkAnswer(answer) {
+    const buttons = document.querySelectorAll('.options button');
+    const correctAnswer = questions[currentQuestion].correct;
+    
+    if (answer === correctAnswer) {
+        buttons[answer].classList.add('correct');
+        score++;
+        document.getElementById('score').textContent = score;
+    } else {
+        buttons[answer].classList.add('incorrect');
+        buttons[correctAnswer].classList.add('correct');
         
+        // Tocar áudio de erro quando o jogador errar
+        errorAudio.play();  
+    }
+
+    buttons.forEach(button => button.disabled = true);
+
+    setTimeout(() => {
+        currentQuestion++;
+        if (currentQuestion < questions.length) {
+            loadQuestion();
+        } else {
+            endGame();
+        }
+    }, 2000);
+}
+
 
         const questions = [
             {
