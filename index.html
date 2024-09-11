@@ -183,6 +183,12 @@
         // Áudio de fundo e de erro
         const backgroundAudio = new Audio('audios/background.mp3');
         const errorAudio = new Audio('audios/errou.mp3'); // Áudio para erros
+        <audio id="errorAudio" autoplay>
+    <source src="audios/errou.mp3" type="audio/mpeg">
+    <source src="audios/errou.ogg" type="audio/ogg">
+    Seu navegador não suporta o elemento de áudio.
+</audio>
+
 
         const questions = [
             {
