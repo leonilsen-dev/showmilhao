@@ -184,6 +184,22 @@
         const backgroundAudio = new Audio('audios/background.mp3');
         const errorAudio = new Audio('audios/errou.mp3'); // Áudio para erros
 
+        // Áudio de fundo e de erro com diferentes formatos para compatibilidade
+const backgroundAudio = new Audio();
+backgroundAudio.src = 'audios/background.mp3';
+
+const errorAudio = new Audio();
+errorAudio.src = 'audios/errou.mp3';
+
+// Alternativamente, você pode usar múltiplos formatos de áudio para compatibilidade:
+const errorAudio = new Audio();
+if (errorAudio.canPlayType('audio/mpeg')) {
+    errorAudio.src = 'audios/errou.mp3';
+} else if (errorAudio.canPlayType('audio/ogg')) {
+    errorAudio.src = 'audios/errou.ogg';
+}
+
+
         const questions = [
             {
                 question: "1. Qual é o principal sintoma da giardíase?",
