@@ -180,8 +180,9 @@
         let score = 0;
         let playerName = "";
 
-        // Áudio de fundo
-        const audio = new Audio('audios/background.mp3');
+        // Áudio de fundo e de erro
+        const backgroundAudio = new Audio('audios/background.mp3');
+        const errorAudio = new Audio('audios/errou.mp3'); // Áudio para erros
 
         const questions = [
             {
@@ -249,7 +250,7 @@
             document.getElementById('gameContainer').classList.remove('hidden');
 
             // Tocar áudio de fundo
-            audio.play();
+            backgroundAudio.play();
             loadQuestion();
         }
 
@@ -276,6 +277,8 @@
             } else {
                 buttons[answer].classList.add('incorrect');
                 buttons[correctAnswer].classList.add('correct');
+                // Tocar áudio de erro
+                errorAudio.play();
             }
 
             buttons.forEach(button => button.disabled = true);
