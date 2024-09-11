@@ -180,38 +180,37 @@
         let score = 0;
         let playerName = "";
 
-       // Áudio de fundo e de erro
-const backgroundAudio = new Audio('audios/background.mp3');
-const errorAudio = new Audio('audios/errou.mp3'); // Áudio para erros
+        // Áudio de fundo, acerto e erro
+        const backgroundAudio = new Audio('audios/background.mp3');
+        const errorAudio = new Audio('audios/errou.mp3');
+        const correctAudio = new Audio('audios/acertou.mp3'); // Áudio para acertos
 
-function checkAnswer(answer) {
-    const buttons = document.querySelectorAll('.options button');
-    const correctAnswer = questions[currentQuestion].correct;
-    
-    if (answer === correctAnswer) {
-        buttons[answer].classList.add('correct');
-        score++;
-        document.getElementById('score').textContent = score;
-    } else {
-        buttons[answer].classList.add('incorrect');
-        buttons[correctAnswer].classList.add('correct');
-        
-        // Tocar áudio de erro quando o jogador errar
-        errorAudio.play();  
-    }
+        function checkAnswer(answer) {
+            const buttons = document.querySelectorAll('.options button');
+            const correctAnswer = questions[currentQuestion].correct;
+            
+            if (answer === correctAnswer) {
+                buttons[answer].classList.add('correct');
+                score++;
+                document.getElementById('score').textContent = score;
+                correctAudio.play();  // Tocar o áudio de acerto
+            } else {
+                buttons[answer].classList.add('incorrect');
+                buttons[correctAnswer].classList.add('correct');
+                errorAudio.play();  // Tocar o áudio de erro
+            }
 
-    buttons.forEach(button => button.disabled = true);
+            buttons.forEach(button => button.disabled = true);
 
-    setTimeout(() => {
-        currentQuestion++;
-        if (currentQuestion < questions.length) {
-            loadQuestion();
-        } else {
-            endGame();
+            setTimeout(() => {
+                currentQuestion++;
+                if (currentQuestion < questions.length) {
+                    loadQuestion();
+                } else {
+                    endGame();
+                }
+            }, 2000);
         }
-    }, 2000);
-}
-
 
         const questions = [
             {
@@ -293,33 +292,6 @@ function checkAnswer(answer) {
                 button.classList.remove('correct', 'incorrect');
                 button.disabled = false;
             });
-        }
-
-        function checkAnswer(answer) {
-            const buttons = document.querySelectorAll('.options button');
-            const correctAnswer = questions[currentQuestion].correct;
-            
-            if (answer === correctAnswer) {
-                buttons[answer].classList.add('correct');
-                score++;
-                document.getElementById('score').textContent = score;
-            } else {
-                buttons[answer].classList.add('incorrect');
-                buttons[correctAnswer].classList.add('correct');
-                // Tocar áudio de erro
-                errorAudio.play();
-            }
-
-            buttons.forEach(button => button.disabled = true);
-
-            setTimeout(() => {
-                currentQuestion++;
-                if (currentQuestion < questions.length) {
-                    loadQuestion();
-                } else {
-                    endGame();
-                }
-            }, 2000);
         }
 
         function endGame() {
