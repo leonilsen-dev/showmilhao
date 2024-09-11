@@ -253,12 +253,18 @@ if (errorAudio.canPlayType('audio/mpeg')) {
             }
         ];
 
-        function registerPlayer() {
-            playerName = document.getElementById("playerName").value;
-            if (playerName) {
-                document.getElementById('playerScreen').classList.add('hidden');
-                document.getElementById('startScreen').classList.remove('hidden');
-            }
+       function registerPlayer() {
+    playerName = document.getElementById("playerName").value.trim(); // Usar trim para evitar espaços em branco
+
+    if (playerName) {
+        // Esconder a tela de nome e mostrar o jogo
+        document.getElementById('playerScreen').classList.add('hidden');
+        document.getElementById('startScreen').classList.remove('hidden');
+    } else {
+        alert("Por favor, insira um nome de jogador.");
+    }
+}
+
         }
 
         function startGame() {
