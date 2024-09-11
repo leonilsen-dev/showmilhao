@@ -4,17 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Show do Milhão - Giardíase</title>
-    <!-- Outros estilos e scripts aqui -->
-</head>
-<body>
-    <!-- O conteúdo da sua página -->
-</body>
-</html>
-
-
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Show do Milhão - Giardíase</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -137,11 +126,6 @@
     </style>
 </head>
 <body>
-    <audio id="backgroundAudio" autoplay loop>
-        <source src="audios/background.mp3" type="audio/mpeg">
-        Seu navegador não suporta o elemento de áudio.
-    </audio>
-
     <!-- Tela de nome do jogador com o logo Show do Milhão -->
     <div class="start-screen" id="playerScreen">
         <img id="logoShow" src="imagens/show.png" alt="Show do Milhão">
@@ -195,6 +179,9 @@
         let currentQuestion = 0;
         let score = 0;
         let playerName = "";
+
+        // Áudio de fundo
+        const audio = new Audio('audios/background.mp3');
 
         const questions = [
             {
@@ -260,6 +247,9 @@
         function startGame() {
             document.getElementById('startScreen').classList.add('hidden');
             document.getElementById('gameContainer').classList.remove('hidden');
+
+            // Tocar áudio de fundo
+            audio.play();
             loadQuestion();
         }
 
