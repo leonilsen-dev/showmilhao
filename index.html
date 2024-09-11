@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Show do Milhão - Giardíase</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #000080; /* Fundo azul escuro */
+            text-align: center;
+            color: white;
+            padding: 50px;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #0099ff;
+            padding: 80px;
+            border-radius: 10px;
+            color: white;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+        h1 {
+            font-size: 28px;
+            margin-bottom: 20px;
+        }
+        .options {
+            margin-top: 20px;
+        }
+        .options button {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            margin: 10px 0;
+            border: none;
+            background-color: #b0d2b0;
+            color: rgb(0, 0, 0);
+            font-size: 22px;
+            border-radius: 5px;
+            cursor: pointer;
+            text-align: left;
+            padding-left: 30px;
+            position: relative;
+            font-weight: bold;
+        }
+        .options button.correct {
+            background-color: green;
+        }
+        .options button.incorrect {
+            background-color: red;
+        }
+        .score {
+            font-size: 20px;
+            margin-top: 20px;
+            color: yellow;
+        }
+        #logoShow {
+            max-width: 300px;
+            margin-bottom: 20px;
+        }
+        #logoLogotipo {
+            max-width: 150px;
+            margin-bottom: 20px;
+        }
+        .start-screen {
+            display: block;
+            text-align: center;
+        }
+        .start-screen button, .start-screen input {
+            font-size: 22px;
+            padding: 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            margin: 10px;
+        }
+        .start-screen input {
+            width: 80%;
+            padding: 15px;
+        }
+        .start-screen button {
+            background-color: #4CAF50;
+            color: white;
+            width: 40%;
+        }
+        .start-screen button:hover {
+            background-color: #45a049;
+        }
+        .hidden {
+            display: none;
+        }
+        .end-card {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #fff;
+            color: #000;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            text-align: center;
+            animation-duration: 1s;
+            animation-iteration-count: infinite;
+        }
+        .end-card.success {
+            animation-name: blink-green;
+        }
+        .end-card.failure {
+            animation-name: blink-red;
+        }
+        @keyframes blink-green {
+            0% { background-color: green; color: white; }
+            50% { background-color: lightgreen; color: white; }
+            100% { background-color: green; color: white; }
+        }
+        @keyframes blink-red {
+            0% { background-color: red; color: white; }
+            50% { background-color: darkred; color: white; }
+            100% { background-color: red; color: white; }
+        }
+        .end-card h2 {
+            font-size: 36px;
+            margin-bottom: 10px;
+        }
+        .end-card p {
+            font-size: 24px;
+        }
+    </style>
+</head>
+<body>
+    <audio id="backgroundAudio" autoplay loop>
+        <source src="audios/background.mp3" type="audio/mpeg">
+        Seu navegador não suporta o elemento de áudio.
+    </audio>
+
+    <!-- Tela de nome do jogador com o logo Show do Milhão -->
+    <div class="start-screen" id="playerScreen">
+        <img id="logoShow" src="imagens/show.png" alt="Show do Milhão">
+        <h2>Digite o nome do jogador</h2>
+        <input type="text" id="playerName" placeholder="Nome do jogador">
+        <button onclick="registerPlayer()">Registrar Jogador</button>
+    </div>
+
+    <!-- Tela de início com o logo Logotipo -->
+    <div class="start-screen hidden" id="startScreen">
+        <img id="logoLogotipo" src="imagens/logotipo.png" alt="Logo Leonardo Nilsen">
+        <button onclick="startGame()">Iniciar</button>
+    </div>
+
+    <!-- Tela de perguntas com o logo Logotipo -->
+    <div class="container hidden" id="gameContainer">
+        <img id="logoLogotipo" src="imagens/logotipo.png" alt="Logo Leonardo Nilsen">
+        <h1 id="question">Pergunta</h1>
+        <div class="options">
+            <button data-number="1" onclick="checkAnswer(0)">Opção 1</button>
+            <button data-number="2" onclick="checkAnswer(1)">Opção 2</button>
+            <button data-number="3" onclick="checkAnswer(2)">Opção 3</button>
+            <button data-number="4" onclick="checkAnswer(3)">Opção 4</button>
+        </div>
+        <div class="score">
+            Pontuação: <span id="score">0</span>
+        </div>
+    </div>
+
+    <!-- Tela final com o logo Logotipo -->
+    <div class="container hidden" id="endScreen">
+        <img id="logoLogotipo" src="imagens/logotipo.png" alt="Logo Leonardo Nilsen">
+        <div class="end-card" id="endCard">
+            <h2>Fim de Jogo!</h2>
+            <p id="finalMessage"></p>
+            <p>Sua pontuação: <span id="finalScore">0</span></p>
+            <button onclick="showLeaderboard()">Ver Vencedores</button>
+        </div>
+    </div>
+
+    <!-- Tela de ranking com o logo Logotipo -->
+    <div class="container hidden" id="leaderboardScreen">
+        <img id="logoLogotipo" src="imagens/logotipo.png" alt="Logo Leonardo Nilsen">
+        <h2>Ranking dos Jogadores</h2>
+        <ul id="leaderboard"></ul>
+        <button onclick="restartGame()">Novo Jogador</button>
+    </div>
+
+    <script>
+        const players = [];
+        let currentQuestion = 0;
+        let score = 0;
+        let playerName = "";
+
+        const questions = [
+            {
+                question: "1. Qual é o principal sintoma da giardíase?",
+                options: ["Febre alta", "Diarreia aquosa", "Dores musculares", "Erupção cutânea"],
+                correct: 1
+            },
+            {
+                question: "2. Como a giardíase é transmitida?",
+                options: ["Pelo ar", "Picada de mosquito", "Ingestão de água contaminada", "Contato com animais infectados"],
+                correct: 2
+            },
+            {
+                question: "3. Qual organismo causa a giardíase?",
+                options: ["Bactéria", "Fungos", "Protozoário", "Vírus"],
+                correct: 2
+            },
+            {
+                question: "4. Qual é o nome do protozoário que causa a giardíase?",
+                options: ["Giardia lamblia", "Plasmodium falciparum", "Trypanosoma cruzi", "Entamoeba histolytica"],
+                correct: 0
+            },
+            {
+                question: "5. Qual a principal medida de prevenção contra a giardíase?",
+                options: ["Vacinação", "Lavar as mãos frequentemente", "Evitar o contato com animais", "Ingestão de alimentos crus"],
+                correct: 1
+            },
+            {
+                question: "6. Qual é o principal tratamento para giardíase?",
+                options: ["Antibióticos", "Antifúngicos", "Antiprotozoários", "Antivirais"],
+                correct: 2
+            },
+            {
+                question: "7. Em quais locais é mais comum a transmissão da giardíase?",
+                options: ["Regiões urbanas", "Regiões rurais e com saneamento básico precário", "Zonas industriais", "Locais frios"],
+                correct: 1
+            },
+            {
+                question: "8. Quais são as complicações da giardíase?",
+                options: ["Problemas respiratórios", "Insuficiência renal", "Desidratação e perda de peso", "Inflamação no fígado"],
+                correct: 2
+            },
+            {
+                question: "9. Como o diagnóstico de giardíase é geralmente realizado?",
+                options: ["Exame de sangue", "Teste de urina", "Exame de fezes", "Tomografia computadorizada"],
+                correct: 2
+            },
+            {
+                question: "10. Quem é mais suscetível à giardíase?",
+                options: ["Crianças em creches", "Idosos", "Trabalhadores da construção civil", "Pessoas vacinadas contra hepatite"],
+                correct: 0
+            }
+        ];
+
+        function registerPlayer() {
+            playerName = document.getElementById("playerName").value;
+            if (playerName) {
+                document.getElementById('playerScreen').classList.add('hidden');
+                document.getElementById('startScreen').classList.remove('hidden');
+            }
+        }
+
+        function startGame() {
+            document.getElementById('startScreen').classList.add('hidden');
+            document.getElementById('gameContainer').classList.remove('hidden');
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            const questionElement = document.getElementById('question');
+            const options = document.querySelectorAll('.options button');
+
+            questionElement.textContent = questions[currentQuestion].question;
+            options.forEach((button, index) => {
+                button.textContent = `${questions[currentQuestion].options[index]}`;
+                button.classList.remove('correct', 'incorrect');
+                button.disabled = false;
+            });
+        }
+
+        function checkAnswer(answer) {
+            const buttons = document.querySelectorAll('.options button');
+            const correctAnswer = questions[currentQuestion].correct;
+            
+            if (answer === correctAnswer) {
+                buttons[answer].classList.add('correct');
+                score++;
+                document.getElementById('score').textContent = score;
+            } else {
+                buttons[answer].classList.add('incorrect');
+                buttons[correctAnswer].classList.add('correct');
+            }
+
+            buttons.forEach(button => button.disabled = true);
+
+            setTimeout(() => {
+                currentQuestion++;
+                if (currentQuestion < questions.length) {
+                    loadQuestion();
+                } else {
+                    endGame();
+                }
+            }, 2000);
+        }
+
+        function endGame() {
+            document.getElementById('gameContainer').classList.add('hidden');
+            document.getElementById('endScreen').classList.remove('hidden');
+
+            document.getElementById('finalScore').textContent = score;
+
+            const endCard = document.getElementById('endCard');
+            if (score === questions.length) {
+                document.getElementById('finalMessage').textContent = "Parabéns! Você acertou tudo!";
+                endCard.classList.add('success');
+            } else {
+                document.getElementById('finalMessage').textContent = "Que pena! Não foi dessa vez.";
+                endCard.classList.add('failure');
+            }
+
+            players.push({ name: playerName, score: score });
+        }
+
+        function showLeaderboard() {
+            const leaderboardElement = document.getElementById('leaderboard');
+            leaderboardElement.innerHTML = "";
+
+            players.sort((a, b) => b.score - a.score);
+            players.forEach(player => {
+                const li = document.createElement('li');
+                li.textContent = `${player.name}: ${player.score} pontos`;
+                leaderboardElement.appendChild(li);
+            });
+
+            document.getElementById('endScreen').classList.add('hidden');
+            document.getElementById('leaderboardScreen').classList.remove('hidden');
+        }
+
+        function restartGame() {
+            document.getElementById('leaderboardScreen').classList.add('hidden');
+            document.getElementById('playerScreen').classList.remove('hidden');
+            score = 0;
+            currentQuestion = 0;
+        }
+    </script>
+</body>
+</html>
